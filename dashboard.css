@@ -507,3 +507,46 @@ body {
     height: 250px;
     width: 100%;
 }
+
+/* Animations */
+@keyframes createZoom {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes createFade {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes updateRotate {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg) scale(1.02); }
+    50% { transform: rotate(-2deg) scale(1.02); }
+    75% { transform: rotate(1deg) scale(1.02); }
+    100% { transform: rotate(0deg); }
+}
+@keyframes updateShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+.anim-create-zoom { animation: createZoom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+.anim-create-fade { animation: createFade 0.5s ease forwards; }
+.anim-update-rotate { animation: updateRotate 0.5s ease; }
+.anim-update-shake { animation: updateShake 0.4s ease; }
+
+/* Maximized Card */
+.dashboard-card.maximized {
+    position: fixed !important;
+    top: 5vh;
+    left: 5vw;
+    width: 90vw;
+    height: 90vh;
+    z-index: 1050;
+    margin: 0;
+    transform: none !important;
+}
+.dashboard-card.maximized .card-body {
+    max-height: calc(90vh - 120px);
+}

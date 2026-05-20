@@ -192,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="card-header" style="cursor: grab;">
                 <div class="card-title"><i class="ph ${icon}"></i> ${title}</div>
                 <div class="card-actions">
+                    <button class="icon-btn maximize-btn" title="Maximizar"><i class="ph ph-corners-out"></i></button>
                     <button class="icon-btn refresh-btn" title="Atualizar"><i class="ph ph-arrows-clockwise"></i></button>
                     <button class="icon-btn delete-btn" title="Remover"><i class="ph ph-trash"></i></button>
                 </div>
@@ -206,6 +207,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
         dashboardGrid.appendChild(cardEl);
 
+        // Animação de criação
+        const createAnimations = ['anim-create-zoom', 'anim-create-fade'];
+        const randomAnim = createAnimations[Math.floor(Math.random() * createAnimations.length)];
+        cardEl.classList.add(randomAnim);
+        setTimeout(() => cardEl.classList.remove(randomAnim), 600);
+
+        // Lógica do botão maximizar
+        const maximizeBtn = cardEl.querySelector('.maximize-btn');
+        maximizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cardEl.classList.toggle('maximized');
+            const isMax = cardEl.classList.contains('maximized');
+            maximizeBtn.innerHTML = isMax ? '<i class="ph ph-corners-in"></i>' : '<i class="ph ph-corners-out"></i>';
+            maximizeBtn.title = isMax ? 'Restaurar' : 'Maximizar';
+            
+            let overlay = document.getElementById('card-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'card-overlay';
+                overlay.className = 'modal-overlay hidden';
+                document.body.appendChild(overlay);
+            }
+            
+            if (isMax) {
+                document.body.style.overflow = 'hidden';
+                overlay.classList.remove('hidden');
+                overlay.onclick = () => { if(cardEl.classList.contains('maximized')) maximizeBtn.click(); };
+            } else {
+                document.body.style.overflow = '';
+                overlay.classList.add('hidden');
+            }
+        });
+
         cardEl.querySelector('.delete-btn').addEventListener('click', () => removeCard(card.id));
         cardEl.querySelector('.refresh-btn').addEventListener('click', () => refreshCardData(card.id));
     }
@@ -216,7 +250,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = dashboardCards[cardIndex];
 
         const bodyEl = document.getElementById(`body-${id}`);
+        const cardEl = document.getElementById(id);
         
+        // Animação de atualização
+        if (cardEl && !cardEl.classList.contains('maximized')) {
+            const updateAnimations = ['anim-update-rotate', 'anim-update-shake'];
+            const randomUpdateAnim = updateAnimations[Math.floor(Math.random() * updateAnimations.length)];
+            cardEl.classList.add(randomUpdateAnim);
+            setTimeout(() => cardEl.classList.remove(randomUpdateAnim), 600);
+        }
+
         bodyEl.innerHTML = '<div class="loading-spinner"><i class="ph ph-spinner-gap"></i></div>';
 
         try {
