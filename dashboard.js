@@ -341,11 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const cardEl = document.getElementById(id);
         const bodyEl = document.getElementById(`body-${id}`);
-        
-        if (updateTime && card.lastUpdated) {
-            const footerText = cardEl.querySelector('.last-update-text');
-            footerText.textContent = `Atualizado: ${new Date(card.lastUpdated).toLocaleTimeString('pt-BR')}`;
-        }
 
         if (Array.isArray(data) && ['repo_commits', 'repo_issues', 'repo_prs', 'repo_releases'].includes(card.type)) {
             const period = card.period || '30';
@@ -361,6 +356,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     return (now - new Date(dateStr).getTime()) <= periodMs;
                 });
             }
+        }
+
+        if (card.lastUpdated) {
+            const footerText = cardEl.querySelector('.last-update-text');
+            let countText = '';
+            if (Array.isArray(data)) countText = ` (${data.length} itens)`;
+            footerText.textContent = `Atualizado: ${new Date(card.lastUpdated).toLocaleTimeString('pt-BR')}${countText}`;
         }
 
         let html = '';
