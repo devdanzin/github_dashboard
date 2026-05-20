@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do GitHub</title>
+    <meta name="description" content="Um dashboard interativo e configurável para o GitHub.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- SortableJS para drag & drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <!-- Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Phosphor Icons para ícones modernos -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-content">
+            <h1><i class="ph ph-github-logo"></i> Dashboard do GitHub</h1>
+            <div class="header-right">
+                <div id="datetime-display" class="datetime"></div>
+                <button id="add-card-btn" class="btn primary"><i class="ph ph-plus"></i> Adicionar Card</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <div id="dashboard-grid" class="dashboard-grid">
+            <!-- Cards serão injetados dinamicamente aqui -->
+        </div>
+    </main>
+
+    <!-- Modal para Adicionar Card -->
+    <div id="add-card-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Adicionar Novo Card</h2>
+                <button id="close-modal-btn" class="icon-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="card-type">Tipo de Card</label>
+                    <select id="card-type">
+                        <option value="" disabled selected>Selecione um tipo...</option>
+                        <option value="user_info">Informações do Usuário</option>
+                        <option value="user_followers">Seguidores do Usuário</option>
+                        <option value="repo_commits">Commits Recentes</option>
+                        <option value="repo_issues">Issues Recentes</option>
+                        <option value="repo_prs">Pull Requests Recentes</option>
+                        <option value="repo_releases">Releases Recentes</option>
+                        <option value="repo_contributors">Colaboradores do Projeto</option>
+                        <option value="repo_stats">Estatísticas do Projeto (Gráfico)</option>
+                    </select>
+                </div>
+                
+                <div id="dynamic-fields" class="form-group hidden">
+                    <!-- Campos dinâmicos serão injetados aqui -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-card-btn" class="btn secondary">Cancelar</button>
+                <button id="save-card-btn" class="btn primary" disabled>Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
