@@ -218,12 +218,12 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             let data = null;
             if (card.type === 'user_info') data = await fetchAPI(`users/${card.param}`);
-            else if (card.type === 'user_followers') data = await fetchAPI(`users/${card.param}/followers?per_page=12`);
-            else if (card.type === 'repo_commits') data = await fetchAPI(`repos/${card.param}/commits?per_page=5`);
-            else if (card.type === 'repo_issues') data = await fetchAPI(`repos/${card.param}/issues?state=all&per_page=5`);
-            else if (card.type === 'repo_prs') data = await fetchAPI(`repos/${card.param}/pulls?state=all&per_page=5`);
-            else if (card.type === 'repo_releases') data = await fetchAPI(`repos/${card.param}/releases?per_page=5`);
-            else if (card.type === 'repo_contributors') data = await fetchAPI(`repos/${card.param}/contributors?per_page=12`);
+            else if (card.type === 'user_followers') data = await fetchAPI(`users/${card.param}/followers?per_page=30`);
+            else if (card.type === 'repo_commits') data = await fetchAPI(`repos/${card.param}/commits?per_page=30`);
+            else if (card.type === 'repo_issues') data = await fetchAPI(`repos/${card.param}/issues?state=all&per_page=30`);
+            else if (card.type === 'repo_prs') data = await fetchAPI(`repos/${card.param}/pulls?state=all&per_page=30`);
+            else if (card.type === 'repo_releases') data = await fetchAPI(`repos/${card.param}/releases?per_page=30`);
+            else if (card.type === 'repo_contributors') data = await fetchAPI(`repos/${card.param}/contributors?per_page=30`);
             else if (card.type === 'repo_stats') data = await fetchAPI(`repos/${card.param}/stats/participation`);
 
             dashboardCards[cardIndex].data = data;
