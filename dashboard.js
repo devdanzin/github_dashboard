@@ -188,10 +188,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const dateStr = card.lastUpdated ? new Date(card.lastUpdated).toLocaleTimeString('pt-BR') : 'Nunca';
 
+        let periodHtml = '';
+        if (['repo_commits', 'repo_issues', 'repo_prs', 'repo_releases'].includes(card.type)) {
+            const currentPeriod = card.period || '30';
+            periodHtml = `
+                <select class="period-select" style="background: rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color: var(--text-main); border-radius: 4px; font-size: 0.8rem; padding: 0.2rem; cursor: pointer; margin-right: 0.5rem;">
+                    <option value="7" ${currentPeriod === '7' ? 'selected' : ''}>7 dias</option>
+                    <option value="30" ${currentPeriod === '30' ? 'selected' : ''}>30 dias</option>
+                    <option value="180" ${currentPeriod === '180' ? 'selected' : ''}>6 meses</option>
+                    <option value="all" ${currentPeriod === 'all' ? 'selected' : ''}>Tudo</option>
+                </select>
+            `;
+        }
+
         cardEl.innerHTML = `
             <div class="card-header" style="cursor: grab;">
                 <div class="card-title"><i class="ph ${icon}"></i> ${title}</div>
                 <div class="card-actions">
+                    ${periodHtml}
                     <button class="icon-btn maximize-btn" title="Maximizar"><i class="ph ph-corners-out"></i></button>
                     <button class="icon-btn refresh-btn" title="Atualizar"><i class="ph ph-arrows-clockwise"></i></button>
                     <button class="icon-btn delete-btn" title="Remover"><i class="ph ph-trash"></i></button>
@@ -206,6 +220,19 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         dashboardGrid.appendChild(cardEl);
+
+        const periodSelect = cardEl.querySelector('.period-select');
+        if (periodSelect) {
+            periodSelect.addEventListener('mousedown', (e) => e.stopPropagation());
+            periodSelect.addEventListener('change', (e) => {
+                const cardIndex = dashboardCards.findIndex(c => c.id === card.id);
+                if (cardIndex > -1) {
+                    dashboardCards[cardIndex].period = e.target.value;
+                    saveState();
+                    updateCardContent(card.id, dashboardCards[cardIndex].data, false);
+                }
+            });
+        }
 
         // Animação de criação
         const createAnimations = ['anim-create-zoom', 'anim-create-fade'];
@@ -266,10 +293,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let data = null;
             if (card.type === 'user_info') data = await fetchAPI(`users/${card.param}`);
             else if (card.type === 'user_followers') data = await fetchAPI(`users/${card.param}/followers?per_page=30`);
-            else if (card.type === 'repo_commits') data = await fetchAPI(`repos/${card.param}/commits?per_page=30`);
-            else if (card.type === 'repo_issues') data = await fetchAPI(`repos/${card.param}/issues?state=all&per_page=30`);
-            else if (card.type === 'repo_prs') data = await fetchAPI(`repos/${card.param}/pulls?state=all&per_page=30`);
-            else if (card.type === 'repo_releases') data = await fetchAPI(`repos/${card.param}/releases?per_page=30`);
+            else if (card.type === 'repo_commits') data = await fetchAPI(`repos/${card.param}/commits?per_page=100`);
+            else if (card.type === 'repo_issues') data = await fetchAPI(`repos/${card.param}/issues?state=all&per_page=100`);
+            else if (card.type === 'repo_prs') data = await fetchAPI(`repos/${card.param}/pulls?state=all&per_page=100`);
+            else if (card.type === 'repo_releases') data = await fetchAPI(`repos/${card.param}/releases?per_page=100`);
             else if (card.type === 'repo_contributors') data = await fetchAPI(`repos/${card.param}/contributors?per_page=30`);
             else if (card.type === 'repo_stats') data = await fetchAPI(`repos/${card.param}/stats/participation`);
 
@@ -306,6 +333,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (updateTime && card.lastUpdated) {
             const footerText = cardEl.querySelector('.last-update-text');
             footerText.textContent = `Atualizado: ${new Date(card.lastUpdated).toLocaleTimeString('pt-BR')}`;
+        }
+
+        if (Array.isArray(data) && ['repo_commits', 'repo_issues', 'repo_prs', 'repo_releases'].includes(card.type)) {
+            const period = card.period || '30';
+            if (period !== 'all') {
+                const periodMs = parseInt(period) * 24 * 60 * 60 * 1000;
+                const now = Date.now();
+                data = data.filter(item => {
+                    let dateStr = item.created_at || item.published_at;
+                    if (card.type === 'repo_commits' && item.commit) {
+                        dateStr = item.commit.author.date;
+                    }
+                    if (!dateStr) return true;
+                    return (now - new Date(dateStr).getTime()) <= periodMs;
+                });
+            }
         }
 
         let html = '';
