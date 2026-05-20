@@ -1,12 +1,13 @@
 // dashboard.js
 document.addEventListener('DOMContentLoaded', () => {
     // --- State & Config ---
-    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+    const CACHE_DURATION = 30 * 60 * 1000; // 30 minutos
     let dashboardCards = JSON.parse(localStorage.getItem('github_dashboard_cards')) || [];
 
     // --- DOM Elements ---
     const datetimeDisplay = document.getElementById('datetime-display');
     const dashboardGrid = document.getElementById('dashboard-grid');
+    const refreshAllBtn = document.getElementById('refresh-all-btn');
     const addCardBtn = document.getElementById('add-card-btn');
     const modal = document.getElementById('add-card-modal');
     const closeBtn = document.getElementById('close-modal-btn');
@@ -22,6 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initSortable();
 
     // --- Event Listeners ---
+    refreshAllBtn.addEventListener('click', () => {
+        dashboardCards.forEach(card => refreshCardData(card.id));
+    });
     addCardBtn.addEventListener('click', openModal);
     closeBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
