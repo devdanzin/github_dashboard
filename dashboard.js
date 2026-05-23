@@ -342,19 +342,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardEl = document.getElementById(id);
         const bodyEl = document.getElementById(`body-${id}`);
 
-        if (Array.isArray(data) && ['repo_commits', 'repo_issues', 'repo_prs', 'repo_releases'].includes(card.type)) {
-            const period = card.period || '30';
-            if (period !== 'all') {
-                const periodMs = parseInt(period) * 24 * 60 * 60 * 1000;
-                const now = Date.now();
-                data = data.filter(item => {
-                    let dateStr = item.created_at || item.published_at;
-                    if (card.type === 'repo_commits' && item.commit) {
-                        dateStr = item.commit.author.date;
-                    }
-                    if (!dateStr) return true;
-                    return (now - new Date(dateStr).getTime()) <= periodMs;
-                });
+        if (Array.isArray(data)) {
+            if (['repo_commits', 'repo_issues', 'repo_prs', 'repo_releases'].includes(card.type)) {
+                const period = card.period || '30';
+                if (period !== 'all') {
+                    const periodMs = parseInt(period) * 24 * 60 * 60 * 1000;
+                    const now = Date.now();
+                    data = data.filter(item => {
+                        let dateStr = item.created_at || item.published_at;
+                        if (card.type === 'repo_commits' && item.commit) {
+                            dateStr = item.commit.author.date;
+                        }
+                        if (!dateStr) return true;
+                        return (now - new Date(dateStr).getTime()) <= periodMs;
+                    });
+                }
+            }
+            if (card.type === 'repo_issues') {
+                data = data.filter(item => !item.pull_request);
             }
         }
 
